@@ -1,4 +1,6 @@
-﻿namespace KeyShark
+﻿using KeyShark.Native;
+
+namespace KeyShark
 {
     public class KeyboardEventArgs
     {

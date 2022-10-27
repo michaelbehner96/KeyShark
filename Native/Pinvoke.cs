@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace KeyShark
+namespace KeyShark.Native
 {
     public static class Pinvoke
     {
@@ -20,32 +20,5 @@ namespace KeyShark
         public static extern IntPtr GetModuleHandle(string lpModuleName);
 
         public delegate IntPtr LowLevelKeyboardProc(int nCode, KeyboardMessage keyboardMessage, IntPtr keyboardDataPtr);
-    }
-
-    public enum KeyboardMessage : int
-    {
-        KeyDown = 0x0100,
-        KeyUp = 0x0101,
-        SystemKeyDown = 0x0104,
-        SystemKeyUp = 0x0105
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    public class KeyboardData
-    {
-        public VKey vkCode;
-        public uint scanCode;
-        public KeyboardDataFlags flags;
-        public uint time;
-        public UIntPtr dwExtraInfo;
-    }
-
-    [Flags]
-    public enum KeyboardDataFlags : uint
-    {
-        Extended = 0x01,
-        Injected = 0x10,
-        AltDown = 0x20,
-        Up = 0x80,
     }
 }

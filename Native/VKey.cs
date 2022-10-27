@@ -1,4 +1,4 @@
-﻿namespace KeyShark
+﻿namespace KeyShark.Native
 {
     /// <summary>
     /// Virtual-Key Codes.
@@ -54,7 +54,7 @@
         /// <summary>
         /// SHIFT key.
         /// </summary>
-        [Obsolete(message:"Use the left or right variant.")]
+        [Obsolete(message: "Use the left or right variant.")]
         SHIFT = 0x10,
         /// <summary>
         /// CTRL key.
