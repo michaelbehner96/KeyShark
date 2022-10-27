@@ -4,6 +4,28 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Key Shark</Title>
+    <Authors>Michael Behner</Authors>
+    <Description>A global keyboard event listener for Windows.</Description>
+    <Copyright></Copyright>
+    <PackageProjectUrl></PackageProjectUrl>
+    <RepositoryUrl>https://github.com/michaelbehner96/KeyShark</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>windows;keyboard;key;keys;global;hotkey;hotkeys</PackageTags>
+    <PackageIcon>Keyboard.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Update="Keyboard.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
