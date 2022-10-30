@@ -15,6 +15,8 @@
     <PackageTags>windows;keyboard;key;keys;global;hotkey;hotkeys</PackageTags>
     <PackageIcon>Keyboard.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
