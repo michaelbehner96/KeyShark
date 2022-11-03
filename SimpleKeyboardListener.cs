@@ -1,10 +1,12 @@
 ﻿using System.Diagnostics;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using KeyShark.Native;
+using Microsoft.Win32.SafeHandles;
 
 namespace KeyShark
 {
-    public class SimpleKeyboardListener : IKeyboardListener
+    public class SimpleKeyboardListener : IKeyboardListener, IDisposable
     {
         public bool IsListening { get; private set; }
 
@@ -12,21 +14,15 @@ namespace KeyShark
         public event EventHandler<KeyboardEventArgs>? KeyDown;
         public event EventHandler<KeyboardEventArgs>? KeyHeld;
 
-        private IntPtr nativeHookHandle;
+        private HookSafeHandle? nativeHookHandle;
         private readonly Pinvoke.LowLevelKeyboardProc lowLevelEventDelegate;
         private readonly IKeyStateTracker keyStateTracker;
 
         public SimpleKeyboardListener(IKeyStateTracker keyStateTracker)
         {
             lowLevelEventDelegate = LowLevelEventDelegate;
-            nativeHookHandle = IntPtr.Zero;
             this.keyStateTracker = keyStateTracker ?? throw new ArgumentNullException(nameof(keyStateTracker));
             IsListening = false;
-        }
-
-        ~SimpleKeyboardListener()
-        {
-            Stop();
         }
 
         public void Start()
@@ -47,14 +43,13 @@ namespace KeyShark
             if (!IsListening)
                 return;
 
-            Pinvoke.UnhookWindowsHookEx(nativeHookHandle);
-            nativeHookHandle = IntPtr.Zero;
             IsListening = false;
+            keyStateTracker.ClearAllStates();
         }
 
         private IntPtr LowLevelEventDelegate(int nCode, KeyboardMessage keyboardMessage, IntPtr keyboardDataPtr)
         {
-            if (nCode >= 0)
+            if (IsListening && nCode >= 0)
             {
                 if (keyboardMessage == KeyboardMessage.KeyUp || keyboardMessage == KeyboardMessage.SystemKeyUp)
                 {
@@ -84,5 +79,29 @@ namespace KeyShark
             return Pinvoke.CallNextHookEx(nativeHookHandle, nCode, (IntPtr)keyboardMessage, keyboardDataPtr);
         }
 
+        public void Dispose()
+        {
+            Stop();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (nativeHookHandle != null && !nativeHookHandle.IsInvalid)
+            {
+                nativeHookHandle.Dispose();
+            }
+        }
+    }
+
+    public class HookSafeHandle : SafeHandleZeroOrMinusOneIsInvalid
+    {
+        private HookSafeHandle() : base(true) { }
+
+        protected override bool ReleaseHandle()
+        {
+            return Pinvoke.UnhookWindowsHookEx(handle);
+        }
     }
 }

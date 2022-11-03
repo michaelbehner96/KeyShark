@@ -2,7 +2,7 @@
 
 namespace KeyShark
 {
-    [Obsolete(message: "Use Hotkey class instead.")]
+    [Obsolete(message: $"Use {nameof(Keybind)} class instead.")]
     public class Keystroke
     {
         public VKey[] KeyCodes { get; private set; }

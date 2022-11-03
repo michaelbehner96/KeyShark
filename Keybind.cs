@@ -1,10 +1,11 @@
 ﻿using KeyShark.Native;
+using System.Reflection.Metadata.Ecma335;
 
 namespace KeyShark
 {
     public class Keybind
     {
-        public VKey[] KeyCodes { get; private set; }
+        public VKey[]? KeyCodes { get; set; }
 
         private bool _enabled;
         public bool Enabled
@@ -26,9 +27,9 @@ namespace KeyShark
         private bool recentlyPressed;
         private readonly IKeyboardListener keyboardListener;
 
-        public Keybind(IKeyboardListener keyboardListener, params VKey[] keyCodes)
+        public Keybind(IKeyboardListener keyboardListener, params VKey[]? keyCodes)
         {
-            KeyCodes = keyCodes ?? throw new ArgumentNullException(nameof(keyCodes));
+            KeyCodes = keyCodes;
             this.keyboardListener = keyboardListener ?? throw new ArgumentNullException(nameof(keyboardListener));
             this.keyboardListener.KeyUp += KeyboardListener_KeyUp;
             this.keyboardListener.KeyHeld += KeyboardListener_KeyHeld;
@@ -69,6 +70,8 @@ namespace KeyShark
 
         private bool KeybindCombinationIsPressed(IKeyStateTracker keyStateTracker)
         {
+            if (KeyCodes == null || KeyCodes.Length == 0) return false;
+
             var result = true;
 
             foreach (var keyCode in KeyCodes)

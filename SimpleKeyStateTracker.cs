@@ -22,6 +22,19 @@ namespace KeyShark
             return KeyStates[keyCode];
         }
 
+        public VKey[] GetKeysInState(KeyState keyState)
+        {
+            var result = new List<VKey>();
+
+            foreach(var kvp in KeyStates)
+            {
+                if (kvp.Value == keyState)
+                    result.Add(kvp.Key);
+            }
+
+            return result.ToArray();
+        }
+
         public bool CheckKeyState(VKey keyCode, KeyState keyState)
         {
             if (!KeyStates.ContainsKey(keyCode))
@@ -33,6 +46,11 @@ namespace KeyShark
                     return true;
 
             return false;
+        }
+
+        public void ClearAllStates()
+        {
+            KeyStates.Clear();
         }
     }
 }

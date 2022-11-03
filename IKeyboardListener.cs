@@ -1,13 +1,15 @@
 ﻿namespace KeyShark
 {
-    public interface IKeyboardListener
+    public interface IKeyboardListener : IDisposable
     {
+        public bool IsListening { get; }
+
         public event EventHandler<KeyboardEventArgs>? KeyUp;
         public event EventHandler<KeyboardEventArgs>? KeyDown;
         public event EventHandler<KeyboardEventArgs>? KeyHeld;
 
-        public void Start();
+        public void Resume();
 
-        public void Stop();
+        public void Pause();
     }
 }
