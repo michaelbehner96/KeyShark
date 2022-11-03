@@ -31,11 +31,17 @@ namespace KeyShark
 
         private void OnKeyUp(object? sender, KeyboardEventArgs e)
         {
+            if (!IsRecording)
+                return;
+
             keyStateTracker.PutKeyState(e.KeyCode, KeyState.Up);
         }
 
         private void OnKeyDown(object? sender, KeyboardEventArgs e)
         {
+            if (!IsRecording)
+                return;
+
             keyStateTracker.PutKeyState(e.KeyCode, KeyState.Down);
 
             if (!auxillaryKeys.Contains(e.KeyCode))
@@ -48,7 +54,6 @@ namespace KeyShark
 
             cancellationTokenSource = new CancellationTokenSource();
             var cancellationToken = cancellationTokenSource.Token;
-            keyboardListener.Start();
             IsRecording = true;
 
             try
@@ -82,7 +87,6 @@ namespace KeyShark
         private void Reset()
         {
             IsRecording = false;
-            keyboardListener.Stop();
             keyStateTracker.ClearAllStates();
             cancellationTokenSource?.Dispose();
         }

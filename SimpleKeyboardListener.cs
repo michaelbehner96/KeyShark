@@ -2,19 +2,17 @@
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using KeyShark.Native;
-using Microsoft.Win32.SafeHandles;
 
 namespace KeyShark
 {
     public class SimpleKeyboardListener : IKeyboardListener, IDisposable
     {
-        public bool IsListening { get; private set; }
 
         public event EventHandler<KeyboardEventArgs>? KeyUp;
         public event EventHandler<KeyboardEventArgs>? KeyDown;
         public event EventHandler<KeyboardEventArgs>? KeyHeld;
 
-        private HookSafeHandle? nativeHookHandle;
+        private HookSafeHandle nativeHookHandle;
         private readonly Pinvoke.LowLevelKeyboardProc lowLevelEventDelegate;
         private readonly IKeyStateTracker keyStateTracker;
 
@@ -22,34 +20,21 @@ namespace KeyShark
         {
             lowLevelEventDelegate = LowLevelEventDelegate;
             this.keyStateTracker = keyStateTracker ?? throw new ArgumentNullException(nameof(keyStateTracker));
-            IsListening = false;
+            this.nativeHookHandle = Hook();
         }
 
-        public void Start()
+        private HookSafeHandle Hook()
         {
-            if (IsListening)
-                return;
-
             using (Process curProcess = Process.GetCurrentProcess())
             using (ProcessModule curModule = curProcess.MainModule ?? throw new Exception("Main Module is null, cannot hook!"))
             {
-                nativeHookHandle = Pinvoke.SetWindowsHookEx(Pinvoke.WH_KEYBOARD_LL, lowLevelEventDelegate, Pinvoke.GetModuleHandle(curModule.ModuleName ?? throw new Exception("Module Name is null, cannot hook!")), 0);
-                IsListening = true;
+                return Pinvoke.SetWindowsHookEx(Pinvoke.WH_KEYBOARD_LL, lowLevelEventDelegate, Pinvoke.GetModuleHandle(curModule.ModuleName ?? throw new Exception("Module Name is null, cannot hook!")), 0);
             }
-        }
-
-        public void Stop()
-        {
-            if (!IsListening)
-                return;
-
-            IsListening = false;
-            keyStateTracker.ClearAllStates();
         }
 
         private IntPtr LowLevelEventDelegate(int nCode, KeyboardMessage keyboardMessage, IntPtr keyboardDataPtr)
         {
-            if (IsListening && nCode >= 0)
+            if (nCode >= 0)
             {
                 if (keyboardMessage == KeyboardMessage.KeyUp || keyboardMessage == KeyboardMessage.SystemKeyUp)
                 {
@@ -81,7 +66,6 @@ namespace KeyShark
 
         public void Dispose()
         {
-            Stop();
             Dispose(true);
             GC.SuppressFinalize(this);
         }
@@ -92,16 +76,6 @@ namespace KeyShark
             {
                 nativeHookHandle.Dispose();
             }
-        }
-    }
-
-    public class HookSafeHandle : SafeHandleZeroOrMinusOneIsInvalid
-    {
-        private HookSafeHandle() : base(true) { }
-
-        protected override bool ReleaseHandle()
-        {
-            return Pinvoke.UnhookWindowsHookEx(handle);
         }
     }
 }
