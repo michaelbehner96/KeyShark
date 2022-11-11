@@ -42,6 +42,9 @@ namespace KeyShark
         {
             if (Enabled && KeybindCombinationIsPressed(e.KeyStateTracker))
             {
+                if (recentlyPressed)
+                    return;
+
                 recentlyPressed = true;
                 KeybindPressed?.Invoke(this, EventArgs.Empty);
             }

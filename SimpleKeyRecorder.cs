@@ -64,7 +64,7 @@ namespace KeyShark
                     {
                         cancellationToken.ThrowIfCancellationRequested();
                     }
-                }, cancellationToken);
+                });
 
                 return keyStateTracker.GetKeysInState(KeyState.Down);
             }
