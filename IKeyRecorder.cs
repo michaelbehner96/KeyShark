@@ -10,5 +10,4 @@ namespace KeyShark
         public Task<VKey[]?> RecordKeysAsync();
         public void CancelRecording();
     }
-
 }

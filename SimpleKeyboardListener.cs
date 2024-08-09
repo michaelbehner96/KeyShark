@@ -7,7 +7,6 @@ namespace KeyShark
 {
     public class SimpleKeyboardListener : IKeyboardListener, IDisposable
     {
-
         public event EventHandler<KeyboardEventArgs>? KeyUp;
         public event EventHandler<KeyboardEventArgs>? KeyDown;
         public event EventHandler<KeyboardEventArgs>? KeyHeld;
@@ -25,11 +24,9 @@ namespace KeyShark
 
         private HookSafeHandle Hook()
         {
-            using (Process curProcess = Process.GetCurrentProcess())
-            using (ProcessModule curModule = curProcess.MainModule ?? throw new Exception("Main Module is null, cannot hook!"))
-            {
-                return Pinvoke.SetWindowsHookEx(Pinvoke.WH_KEYBOARD_LL, lowLevelEventDelegate, Pinvoke.GetModuleHandle(curModule.ModuleName ?? throw new Exception("Module Name is null, cannot hook!")), 0);
-            }
+            using Process currentProcess = Process.GetCurrentProcess();
+            using ProcessModule currentModule = currentProcess.MainModule ?? throw new Exception("Main Module is null, cannot hook!");
+            return Pinvoke.SetWindowsHookEx(Pinvoke.WH_KEYBOARD_LL, lowLevelEventDelegate, Pinvoke.GetModuleHandle(currentModule.ModuleName ?? throw new Exception("Module Name is null, cannot hook!")), 0);
         }
 
         private IntPtr LowLevelEventDelegate(int nCode, KeyboardMessage keyboardMessage, IntPtr keyboardDataPtr)
